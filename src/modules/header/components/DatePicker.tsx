@@ -2,7 +2,6 @@ import * as React from "react"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/popover"
 
 export function DatePicker() {
-  const [date, setDate] = React.useState<Date>()
+  const [date, setDate] = React.useState<Date>(new Date(2026,0,1))
 
   return (
     <Popover>
@@ -26,10 +25,10 @@ export function DatePicker() {
         }
       >
         <CalendarIcon />
-        {date ? format(date, "PPP") : <span>Pick a date</span>}
+        {date ? format(date, "PPP") : <span>Выберите дату</span>}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <Calendar mode="single" selected={date} onSelect={setDate} />
+        <Calendar mode="single" required selected={date} onSelect={setDate} />
       </PopoverContent>
     </Popover>
   )
