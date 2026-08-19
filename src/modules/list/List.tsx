@@ -19,7 +19,7 @@ export const List: FC = () => {
 
   return (
     <div className="mt-10 flex flex-1 flex-col rounded-3xl bg-secondary px-5 py-8 shadow-secondary transition-all duration-300 hover:shadow-2xl md:mt-20">
-      {status === "loading" && [1,2,3,4,5].map(skeleton=><Skeleton className="flex-1 m-2"/>)}
+      {status === "loading" && [1,2,3,4,5].map(()=><Skeleton className="flex-1 m-2"/>)}
       {status === "failed" && (
         <ListAlert
           text={error || "Ошибка запроса"}
