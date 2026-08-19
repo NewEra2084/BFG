@@ -9,9 +9,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useDispatch, useSelector } from "react-redux"
+import type { RootState } from "@/store/store"
+import { setNewDate } from "@/store/slices/datesStore"
 
-export function DatePicker() {
-  const [date, setDate] = React.useState<Date>(new Date(2026,0,1))
+export const DatePicker = () => {
+  const dispatch = useDispatch()
+  const { newDate } = useSelector((state: RootState) => state.dates)
+
+  const handleChooseDate = (date: Date) => {
+    dispatch(setNewDate(date.toISOString()))
+  }
 
   return (
     <Popover>
@@ -19,16 +27,25 @@ export function DatePicker() {
         render={
           <Button
             variant="outline"
-            data-empty={!date}
-            className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
+            data-empty={!newDate}
+            className="data-[empty=true]:text-muted-foreground justify-start text-left font-normal"
           />
         }
       >
         <CalendarIcon />
-        {date ? format(date, "PPP") : <span>Выберите дату</span>}
+        {newDate ? (
+          format(new Date(newDate), "PPP")
+        ) : (
+          <span>Выберите дату</span>
+        )}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <Calendar mode="single" required selected={date} onSelect={setDate} />
+        <Calendar
+          mode="single"
+          required
+          selected={new Date(newDate)}
+          onSelect={(date) => handleChooseDate(date)}
+        />
       </PopoverContent>
     </Popover>
   )
