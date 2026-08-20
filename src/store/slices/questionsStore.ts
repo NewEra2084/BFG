@@ -5,6 +5,8 @@ type QuestionsState = {
   questions: Question[]
   status: "loading" | "succeeded" | "failed"
   error: string | null
+  selectedQuestionId: number | null
+  swapArray: number[]
 }
 
 type fetchError = {
@@ -17,6 +19,8 @@ const initialState: QuestionsState = {
   questions: [],
   status: "loading",
   error: null,
+  selectedQuestionId: null,
+  swapArray: []
 }
 
 export const fetchQuestions = createAsyncThunk(
@@ -45,7 +49,13 @@ export const fetchQuestions = createAsyncThunk(
 const questionsSlice = createSlice({
   name: "questions",
   initialState,
-  reducers: {},
+  reducers: {
+    openQuestion: (state, action)=>{
+      if(state.selectedQuestionId === action.payload) return
+      state.selectedQuestionId = action.payload
+    },
+    
+  },
 
   extraReducers: (builder) => {
     builder
@@ -64,6 +74,6 @@ const questionsSlice = createSlice({
   },
 })
 
-export const {} = questionsSlice.actions
+export const {openQuestion} = questionsSlice.actions
 
 export default questionsSlice.reducer
