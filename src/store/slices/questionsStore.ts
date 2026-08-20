@@ -1,12 +1,13 @@
 import type { Question } from "@/components/types/question"
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { mockFirst5Questions } from "../__tests__/api_mock"
 
 type QuestionsState = {
   questions: Question[]
   status: "loading" | "succeeded" | "failed"
   error: string | null
   selectedQuestionId: number | null
-  swapArray: number[]
+  swapArray: Question[]
 }
 
 type fetchError = {
@@ -16,11 +17,12 @@ type fetchError = {
 }
 
 const initialState: QuestionsState = {
-  questions: [],
-  status: "loading",
+  // questions: [],
+  questions: mockFirst5Questions,
+  status: "succeeded",
   error: null,
   selectedQuestionId: null,
-  swapArray: []
+  swapArray: [],
 }
 
 export const fetchQuestions = createAsyncThunk(
@@ -31,9 +33,11 @@ export const fetchQuestions = createAsyncThunk(
     const link = `https://api.stackexchange.com/2.3/questions?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&site=stackoverflow`
     try {
       const req = await fetch(link)
-      if(!req.ok){
-        const errorText:fetchError = await req.json();
-        throw new Error(`HTTP ${errorText.error_id}: ${errorText.error_message} (${errorText.error_name})`)
+      if (!req.ok) {
+        const errorText: fetchError = await req.json()
+        throw new Error(
+          `HTTP ${errorText.error_id}: ${errorText.error_message} (${errorText.error_name})`
+        )
       }
       const res = await req.json()
       return res.items
@@ -41,7 +45,7 @@ export const fetchQuestions = createAsyncThunk(
       if (e instanceof Error) {
         throw new Error(e.message)
       }
-      throw new Error('Неизвестная ошибка');
+      throw new Error("Неизвестная ошибка")
     }
   }
 )
@@ -50,11 +54,36 @@ const questionsSlice = createSlice({
   name: "questions",
   initialState,
   reducers: {
-    openQuestion: (state, action)=>{
-      if(state.selectedQuestionId === action.payload) return
+    openQuestion: (state, action) => {
+      if (state.selectedQuestionId === action.payload) return
       state.selectedQuestionId = action.payload
     },
-    
+    clearSwap: (state) => {
+      if (state.swapArray.length === 0) return
+      state.swapArray = []
+    },
+    swapQuestions: (state, action: { payload: Question }) => {
+      if (state.swapArray.includes(action.payload)) {
+        state.swapArray = []
+        return 
+      }
+
+      state.swapArray = [...state.swapArray, action.payload]
+
+      if (state.swapArray.length >= 2) {
+        const first = state.questions.indexOf(state.swapArray[0])
+        const second = state.questions.indexOf(state.swapArray[1])
+
+        console.log(state.swapArray, second);
+        const newQuestions = [...state.questions]
+        newQuestions[first] = state.questions[second]
+        newQuestions[second] = state.questions[first]
+        
+        state.questions = newQuestions
+        state.swapArray = []
+        console.log(state.questions, state.swapArray);
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -74,6 +103,6 @@ const questionsSlice = createSlice({
   },
 })
 
-export const {openQuestion} = questionsSlice.actions
+export const { openQuestion, swapQuestions, clearSwap } = questionsSlice.actions
 
 export default questionsSlice.reducer

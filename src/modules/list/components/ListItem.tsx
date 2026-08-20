@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
-import { openQuestion } from "@/store/slices/questionsStore"
+import { openQuestion, swapQuestions } from "@/store/slices/questionsStore"
 
 type Props = {
   question: Question
@@ -26,7 +26,7 @@ type Props = {
 
 const ListItem: FC<Props> = ({ question }) => {
   const dispatch = useDispatch()
-  const { selectedQuestionId } = useSelector(
+  const { selectedQuestionId, swapArray } = useSelector(
     (state: RootState) => state.questions
   )
 
@@ -43,22 +43,32 @@ const ListItem: FC<Props> = ({ question }) => {
   } = question
 
   const handleOpen = (id) => {
+    console.log(swapArray);
+    
+    if (swapArray.includes(id)) return
     dispatch(openQuestion(id))
   }
   const handleChoose = (id) => {
-    // dispatch(openQuestion(id))
+    dispatch(swapQuestions(id))
   }
 
   return (
     <div
       className={`m-2 flex ${question_id === selectedQuestionId ? "md:flex-2" : "md:flex-1"} ${is_answered && "ring-2 ring-green-800 outline-1"} flex-col rounded-xl`}
-      onClick={() => handleOpen(question_id)}
-      onContextMenu={()=>handleChoose}
+      onClick={(e) => {
+        if (e.detail == 1) {
+          handleOpen(question_id)
+        } else if (e.detail == 2) {
+          dispatch(openQuestion(null))
+          handleChoose(question)
+        }
+      }}
+      onDoubleClick={() => handleChoose}
     >
       <div className="relative rounded-2xl md:flex-1">
         <div
           key={question_id}
-          className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} bg-main px-4 pt-5 pb-8 md:py-0`}
+          className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} ${swapArray.includes(question) ? "bg-green-300" : "bg-main"} px-4 pt-5 pb-8 md:py-0`}
         >
           <p className="max-w-[70%] text-sm md:pl-7 md:text-base">{title}</p>
           <span className="mr-5 ml-auto text-lg font-bold text-red">
@@ -69,7 +79,9 @@ const ListItem: FC<Props> = ({ question }) => {
             <ChevronDown />
           </div>
         </div>
-        <div className={`absolute right-0 bottom-0 left-0 flex justify-center ${question_id === selectedQuestionId ? "" : "rounded-b-xl"} bg-red/30`}>
+        <div
+          className={`absolute right-0 bottom-0 left-0 flex justify-center ${question_id === selectedQuestionId ? "" : "rounded-b-xl"} bg-red/30`}
+        >
           {question_id === selectedQuestionId ? (
             <ArrowUpNarrowWide size={24} color="#d3d3d3ca" />
           ) : (

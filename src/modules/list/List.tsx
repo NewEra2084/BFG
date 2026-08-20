@@ -1,4 +1,4 @@
-import { fetchQuestions, openQuestion } from "@/store/slices/questionsStore"
+import { clearSwap, fetchQuestions, openQuestion } from "@/store/slices/questionsStore"
 import type { AppDispatch, RootState } from "@/store/store"
 import { useEffect, useRef, type FC } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -14,41 +14,32 @@ export const List: FC = () => {
   const { chosenDate } = useSelector((state: RootState) => state.dates)
   const listRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    dispatch(fetchQuestions(chosenDate))
-  }, [chosenDate])
+  // useEffect(() => {
+  //   dispatch(fetchQuestions(chosenDate))
+  // }, [chosenDate])
 
   useEffect(() => {
-    const handleOverClick = (e: MouseEvent) => {
+    const handleMouseClick = (e: MouseEvent) => {
       if (
         (listRef.current && !listRef.current.contains(e.target as Node)) ||
         listRef.current == (e.target as Node)
       ) {
         dispatch(openQuestion(null))
-      }
-    }
-    const handleRightClick = (e: MouseEvent) => {
-      if (
-        (listRef.current && listRef.current.contains(e.target as Node)) ||
-        listRef.current !== (e.target as Node)
-      ) {
-        dispatch(openQuestion(null))
+        dispatch(clearSwap())
       }
     }
 
-    window.addEventListener("click", handleOverClick)
-    window.addEventListener("contextmenu", handleRightClick)
-    
+    window.addEventListener("click", handleMouseClick)
+
     return () => {
-      window.removeEventListener("click", handleOverClick)
-      window.removeEventListener("contextmenu", handleRightClick)
+      window.removeEventListener("click", handleMouseClick)
     }
   }, [])
 
   return (
     <div
       ref={listRef}
-      className="mt-10 flex flex-1 flex-col overflow-y-scroll rounded-3xl bg-secondary px-5 py-6 shadow-secondary transition-all duration-300 hover:shadow-2xl md:mt-20"
+      className="no-select mt-10 flex flex-1 flex-col overflow-y-scroll rounded-3xl bg-secondary px-5 py-6 shadow-secondary transition-all duration-300 hover:shadow-2xl md:mt-20"
     >
       {status === "loading" &&
         [1, 2, 3, 4, 5].map((_, id) => (
