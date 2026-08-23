@@ -5,12 +5,13 @@ import {
   ArrowUpNarrowWide,
   Calendar,
   Check,
+  CheckCheck,
   ChevronDown,
   ChevronUp,
   MoveUp,
   UserRound,
 } from "lucide-react"
-import { useEffect, type FC } from "react"
+import { useEffect, useState, type FC } from "react"
 import { InfoBlock } from "./InfoBlock"
 import { AlertDialogCustom } from "./AlertDialog"
 import {
@@ -39,6 +40,7 @@ const ListItem: FC<Props> = ({ question }) => {
   const { selectedQuestionId, swapArray, upVotes } = useSelector(
     (state: RootState) => state.questions
   )
+  const [isHover, setIsHover] = useState(false)
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemType,
@@ -62,6 +64,10 @@ const ListItem: FC<Props> = ({ question }) => {
 
   const handleOpen = (id) => {
     if (swapArray.includes(id)) return
+    if(selectedQuestionId === question_id){
+      dispatch(openQuestion(null))
+      return
+    }
     dispatch(openQuestion(id))
   }
   const handleChoose = (id) => {
@@ -83,24 +89,18 @@ const ListItem: FC<Props> = ({ question }) => {
           handleChoose(question)
         }
       }}
+      onMouseOver={() => setIsHover(true)}
+      onMouseOut={() => setIsHover(false)}
     >
       <div className="relative rounded-2xl md:flex-1">
         <div
           key={question_id}
           className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} ${isDragging ? "bg-green-800" : "bg-main"} px-4 pt-5 pb-8 md:py-0`}
         >
-          {swapArray.includes(question) ? (
-            <div
-              className="h-8 w-8 rounded-xl border-2 border-red"
-              onClick={() => dispatch(clearSwap())}
-            >
-              <Check color="hsl(0, 79%, 68%)" className="h-full w-full" />
-            </div>
-          ) : (
-            ""
-          )}
           <p className="max-w-[60%] text-justify text-sm md:pl-7 md:text-start md:text-base">
-            {question_id === selectedQuestionId ? title : title.trim().slice(0,60)+"..."}
+            {question_id === selectedQuestionId
+              ? title
+              : title.trim().slice(0, 60) + "..."}
           </p>
           <span className="mr-5 ml-auto text-lg font-bold text-red">
             {!isIn && score}
@@ -125,9 +125,11 @@ const ListItem: FC<Props> = ({ question }) => {
           </div>
         </div>
         <div
-          className={`absolute right-0 bottom-0 left-0 flex justify-center ${question_id === selectedQuestionId ? "" : "rounded-b-xl"} bg-red/30`}
+          className={`absolute right-0 bottom-0 left-0 ${isHover || swapArray.includes(question) || question_id === selectedQuestionId ? "flex" : "hidden"} justify-center ${question_id === selectedQuestionId ? "" : "rounded-b-xl"} bg-red/30`}
         >
-          {question_id === selectedQuestionId ? (
+          {swapArray.includes(question) ? (
+            <CheckCheck size={24} color="#d3d3d3ca" />
+          ) : question_id === selectedQuestionId ? (
             <ArrowUpNarrowWide size={24} color="#d3d3d3ca" />
           ) : (
             <ArrowDownNarrowWide size={24} color="#d3d3d3ca" />

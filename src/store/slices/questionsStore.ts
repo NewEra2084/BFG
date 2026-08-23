@@ -23,7 +23,6 @@ type fetchError = {
 }
 
 const initialState: QuestionsState = {
-  // questions: [],
   questions: mockFirst5Questions,
   status: "succeeded",
   error: null,
