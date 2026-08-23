@@ -17,8 +17,8 @@ type fetchError = {
 }
 
 const initialState: QuestionsState = {
-  questions: [],
-  // questions: mockFirst5Questions,
+  // questions: [],
+  questions: mockFirst5Questions,
   status: "succeeded",
   error: null,
   selectedQuestionId: null,
@@ -58,6 +58,9 @@ const questionsSlice = createSlice({
       if (state.selectedQuestionId === action.payload) return
       state.selectedQuestionId = action.payload
     },
+    setQuestions: (state, action) => {
+      state.questions = action.payload
+    },
     clearSwap: (state) => {
       if (state.swapArray.length === 0) return
       state.swapArray = []
@@ -79,7 +82,7 @@ const questionsSlice = createSlice({
         )
 
         const newQuestions = [...state.questions]
-        
+
         newQuestions[first] = state.questions[second]
         newQuestions[second] = state.questions[first]
         state.questions = newQuestions
@@ -105,6 +108,7 @@ const questionsSlice = createSlice({
   },
 })
 
-export const { openQuestion, swapQuestions, clearSwap } = questionsSlice.actions
+export const { openQuestion, swapQuestions, clearSwap, setQuestions } =
+  questionsSlice.actions
 
 export default questionsSlice.reducer

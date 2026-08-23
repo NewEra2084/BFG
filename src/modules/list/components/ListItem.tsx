@@ -4,6 +4,7 @@ import {
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
   Calendar,
+  Check,
   ChevronDown,
   ChevronUp,
   MoveUp,
@@ -18,17 +19,32 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
-import { openQuestion, swapQuestions } from "@/store/slices/questionsStore"
+import {
+  clearSwap,
+  openQuestion,
+  swapQuestions,
+} from "@/store/slices/questionsStore"
+import { useDrag } from "react-dnd"
 
 type Props = {
   question: Question
 }
+
+const ItemType = "QUESTION"
 
 const ListItem: FC<Props> = ({ question }) => {
   const dispatch = useDispatch()
   const { selectedQuestionId, swapArray } = useSelector(
     (state: RootState) => state.questions
   )
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemType,
+    item: { id: question.question_id },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }))
 
   const {
     question_id,
@@ -52,7 +68,9 @@ const ListItem: FC<Props> = ({ question }) => {
 
   return (
     <div
-      className={`m-2 flex ${question_id === selectedQuestionId ? "md:flex-2" : "md:flex-1"} ${is_answered && "ring-2 ring-green-800 outline-1"} flex-col rounded-xl`}
+      ref={drag as unknown as React.Ref<HTMLDivElement>}
+      data-question-id={question_id}
+      className={`list-items m-2 flex ${question_id === selectedQuestionId ? "md:flex-2" : "md:flex-1"} ${is_answered && "ring-2 ring-green-800 outline-1"} flex-col rounded-xl`}
       onClick={(e) => {
         if (e.detail == 1) {
           handleOpen(question_id)
@@ -61,13 +79,21 @@ const ListItem: FC<Props> = ({ question }) => {
         }
       }}
     >
-      <div
-        className="relative rounded-2xl md:flex-1"
-      >
+      <div className="relative rounded-2xl md:flex-1">
         <div
           key={question_id}
-          className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} ${swapArray.includes(question) ? "bg-green-300" : "bg-main"} px-4 pt-5 pb-8 md:py-0`}
+          className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} ${isDragging ? "bg-green-800" : "bg-main"} px-4 pt-5 pb-8 md:py-0`}
         >
+          {swapArray.includes(question) ? (
+            <div
+              className="h-8 w-8 rounded-xl border-2 border-red"
+              onClick={() => dispatch(clearSwap())}
+            >
+              <Check color="hsl(0, 79%, 68%)" className="h-full w-full" />
+            </div>
+          ) : (
+            ""
+          )}
           <p className="max-w-[70%] text-sm md:pl-7 md:text-base">{title}</p>
           <span className="mr-5 ml-auto text-lg font-bold text-red">
             {score}
@@ -96,9 +122,7 @@ const ListItem: FC<Props> = ({ question }) => {
       </div>
 
       {question_id === selectedQuestionId && (
-        <div
-          className="rounded-b-xl bg-main px-10 pt-2 pb-4"
-        >
+        <div className="rounded-b-xl bg-main px-10 pt-2 pb-4">
           <div className="flex flex-col gap-2 md:flex-row md:gap-5">
             <InfoBlock
               icon={<MoveUp size={16} />}

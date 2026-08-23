@@ -1,10 +1,16 @@
-import { clearSwap, fetchQuestions, openQuestion } from "@/store/slices/questionsStore"
+import {
+  clearSwap,
+  fetchQuestions,
+  openQuestion,
+  setQuestions,
+} from "@/store/slices/questionsStore"
 import type { AppDispatch, RootState } from "@/store/store"
-import { useEffect, useRef, type FC } from "react"
+import { useEffect, useRef, type FC, type ReactHTMLElement } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { ListAlert } from "./components/ListAlert"
 import ListItem from "./components/ListItem"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useDrop } from "react-dnd"
 
 export const List: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -14,9 +20,9 @@ export const List: FC = () => {
   const { chosenDate } = useSelector((state: RootState) => state.dates)
   const listRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {    
-    dispatch(fetchQuestions(chosenDate))
-  }, [chosenDate])
+  // useEffect(() => {
+  //   dispatch(fetchQuestions(chosenDate))
+  // }, [chosenDate])
 
   useEffect(() => {
     const handleMouseClick = (e: MouseEvent) => {
@@ -36,6 +42,45 @@ export const List: FC = () => {
     }
   }, [])
 
+  const [, drop] = useDrop(() => ({
+    accept: "QUESTION",
+    drop: (item: { id: number }, monitor) => {
+      const clientOffset = monitor.getClientOffset()
+      if (!clientOffset) return
+
+      const elements = document.elementsFromPoint(
+        clientOffset.x,
+        clientOffset.y
+      )
+      const targetElement = elements.find((el) =>
+        el.classList.contains("list-items")
+      )
+
+      if (!targetElement) return
+
+      const hoverId = targetElement.getAttribute("data-question-id")
+      if (!hoverId) return
+
+      if (Number(item.id) !== Number(hoverId)) {
+        moveQuestion(Number(item.id), Number(hoverId))
+      }
+    },
+  }))
+
+  const moveQuestion = (dragId: number, hoverId: number) => {
+    const dragIndex = questions.findIndex((q) => q.question_id === dragId)
+    const hoverIndex = questions.findIndex((q) => q.question_id === hoverId)
+
+    if (dragIndex === -1 || hoverIndex === -1) return
+
+    const newQuestions = [...questions]
+    const tmp = [...questions]
+    newQuestions[dragIndex] = tmp[hoverIndex]
+    newQuestions[hoverIndex] = tmp[dragIndex]
+
+    dispatch(setQuestions(newQuestions))
+  }
+
   return (
     <div
       ref={listRef}
@@ -54,9 +99,14 @@ export const List: FC = () => {
       )}
       {status === "succeeded" &&
         (questions.length > 0 ? (
-          questions?.map((question) => (
-            <ListItem key={question.question_id} question={question} />
-          ))
+          <div
+            className="flex flex-1 flex-col"
+            ref={drop as unknown as React.Ref<HTMLDivElement>}
+          >
+            {questions?.map((question) => (
+              <ListItem key={question.question_id} question={question} />
+            ))}
+          </div>
         ) : (
           <ListAlert
             text={"Вопросов, начиная с этой даты, нету"}
