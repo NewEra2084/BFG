@@ -8,11 +8,22 @@
   --color-red: hsl(0, 79%, 68%);
 }
 
+@layer utilities {
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+}
+
+@plugin "tailwind-scrollbar-hide";
+
 body {
   background-color: #2d2d2d;
   padding: 0 5vw;
 }
-#root{
+#root {
   height: 100vh;
   display: flex;
   flex-direction: column;
