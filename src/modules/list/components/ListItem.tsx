@@ -29,11 +29,18 @@ import {
 import { useDrag } from "react-dnd"
 
 type Props = {
+  /** Объект вопроса */
   question: Question
 }
 
 const ItemType = "QUESTION"
 
+/**
+ * Компонент элемента списка вопросов.
+ * Отображает карточку вопроса с возможностью открытия, голосования и перетаскивания.
+ *
+ * @param question - Объект вопроса.
+ */
 const ListItem: FC<Props> = ({ question }) => {
   const dispatch = useDispatch()
   const { selectedQuestionId, swapArray, upVotes } = useSelector(
@@ -61,6 +68,10 @@ const ListItem: FC<Props> = ({ question }) => {
     creation_date,
   } = question
 
+  /**
+   * Открывает или закрывает карточку вопроса.
+   * При повторном клике по выбранному вопросу закрывает его.
+   */
   const handleOpen = (id: number) => {
     if (selectedQuestionId === question_id) {
       dispatch(openQuestion(null))
@@ -68,6 +79,10 @@ const ListItem: FC<Props> = ({ question }) => {
     }
     dispatch(openQuestion(id))
   }
+
+  /**
+   * Добавляет вопрос в массив для обмена.
+   */
   const handleChoose = (question: Question) => {
     dispatch(swapQuestions(question))
   }
@@ -152,17 +167,17 @@ const ListItem: FC<Props> = ({ question }) => {
               title="Спросил"
               text={owner.display_name}
               addiction={owner.reputation}
-            ></InfoBlock>
+            />
             <InfoBlock
               icon={<Calendar size={16} />}
               title="Дата"
               text={format(new Date(creation_date * 1000), "PPP")}
-            ></InfoBlock>
+            />
             <InfoBlock
               icon={<UserRound size={16} />}
               title="Ответов"
               text={answer_count.toString()}
-            ></InfoBlock>
+            />
             <InfoBlock icon={<Tag size={16} />} title="Тэги" text={""}>
               <div className="flex gap-1">
                 {tags.map((tag, id) => (

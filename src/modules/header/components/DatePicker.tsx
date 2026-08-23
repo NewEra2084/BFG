@@ -12,11 +12,17 @@ import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
 import { setNewDate } from "@/store/slices/datesStore"
 
+/**
+ * Компонент выбора даты.
+ * Хранит дату в Redux-сторе в виде ISO-строки для сериализуемости.
+ * Для отображения использует date-fns для единого формата.
+ */
 export const DatePicker = () => {
   const dispatch = useDispatch()
   const { newDate } = useSelector((state: RootState) => state.dates)
 
   const handleChooseDate = (date: Date) => {
+    // Сохранение даты в ISO-строке для Redux (сериализуемость)
     dispatch(setNewDate(date.toISOString()))
   }
 
@@ -33,6 +39,7 @@ export const DatePicker = () => {
       >
         <CalendarIcon />
         {newDate ? (
+          // Форматирование через date-fns для единого формата (не зависит от локали браузера)
           format(new Date(newDate), "PPP")
         ) : (
           <span>Выберите дату</span>
@@ -42,6 +49,7 @@ export const DatePicker = () => {
         <Calendar
           mode="single"
           required
+          // Преобразование ISO-строки в Date для компонента Calendar
           selected={new Date(newDate)}
           onSelect={(date) => handleChooseDate(date)}
         />

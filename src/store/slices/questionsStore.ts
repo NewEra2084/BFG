@@ -2,17 +2,27 @@ import type { Question } from "@/components/types/question"
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { mockFirst5Questions } from "../__tests__/api_mock"
 
-type Upvote = {
+/**
+ * Тип для голосования: up или down.
+ * Хранит id вопроса и текущее состояние голоса.
+ */
+export type Upvote = {
   id: number
   state: "up" | "down"
 }
 
-type QuestionsState = {
+export type QuestionsState = {
+  /** Список вопросов */
   questions: Question[]
+  /** Статус загрузки: loading, succeeded, failed */
   status: "loading" | "succeeded" | "failed"
+  /** Текст ошибки при неудачной загрузке */
   error: string | null
+  /** ID выбранного вопроса для отображения деталей */
   selectedQuestionId: number | null
+  /** Массив вопросов для обмена местами (drag-and-drop) */
   swapArray: Question[]
+  /** Массив голосов пользователя */
   upVotes: Upvote[]
 }
 
@@ -31,11 +41,16 @@ const initialState: QuestionsState = {
   upVotes: [],
 }
 
+/**
+ * Асинхронный thunk для загрузки вопросов с StackOverflow API.
+ * Принимает дату (ISO-строка), преобразует её в UNIX-время.
+ * Возвращает массив вопросов или выбрасывает ошибку.
+ */
 export const fetchQuestions = createAsyncThunk(
   "questions/fetchQuestions",
   async (date: string) => {
     const perPage = 5
-    const fromDate = Date.parse(date) / 1000 || 1767225600 // 1.1.2026
+    const fromDate = Date.parse(date) / 1000 || 1767225600
     const link = `https://api.stackexchange.com/2.3/questions?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&site=stackoverflow`
     try {
       const req = await fetch(link)
@@ -51,7 +66,7 @@ export const fetchQuestions = createAsyncThunk(
       if (e instanceof Error) {
         throw new Error(e.message, { cause: e })
       }
-      throw new Error("Неизвестная ошибка", { cause: e})
+      throw new Error("Неизвестная ошибка", { cause: e })
     }
   }
 )
@@ -60,13 +75,25 @@ const questionsSlice = createSlice({
   name: "questions",
   initialState,
   reducers: {
+    /**
+     * Открывает вопрос для отображения деталей.
+     * Если передан тот же ID — ничего не меняет.
+     */
     openQuestion: (state, action) => {
       if (state.selectedQuestionId === action.payload) return
       state.selectedQuestionId = action.payload
     },
+
+    /** Полностью заменяет список вопросов (используется при перетасовке) */
     setQuestions: (state, action) => {
       state.questions = action.payload
     },
+
+    /**
+     * Голосование "за" (upvote).
+     * Если голос уже был "up" — убирает его.
+     * Если был "down" или отсутствовал — ставит "up".
+     */
     upvote: (state, action: { payload: number }) => {
       const id = action.payload
       const index = state.upVotes.findIndex((item) => item.id === id)
@@ -80,6 +107,12 @@ const questionsSlice = createSlice({
         ]
       }
     },
+
+    /**
+     * Голосование "против" (downvote).
+     * Если голос уже был "down" — убирает его.
+     * Если был "up" или отсутствовал — ставит "down".
+     */
     downvote: (state, action: { payload: number }) => {
       const id = action.payload
       const index = state.upVotes.findIndex((item) => item.id === id)
@@ -93,10 +126,18 @@ const questionsSlice = createSlice({
         ]
       }
     },
+
+    /** Очищает массив выбранных вопросов для перетасовки */
     clearSwap: (state) => {
       if (state.swapArray.length === 0) return
       state.swapArray = []
     },
+
+    /**
+     * Добавляет вопрос в массив для обмена.
+     * При повторном клике — очищает массив.
+     * При выборе двух вопросов — меняет их местами.
+     */
     swapQuestions: (state, action: { payload: Question }) => {
       if (state.swapArray.includes(action.payload)) {
         state.swapArray = []
@@ -114,7 +155,6 @@ const questionsSlice = createSlice({
         )
 
         const newQuestions = [...state.questions]
-
         newQuestions[first] = state.questions[second]
         newQuestions[second] = state.questions[first]
         state.questions = newQuestions

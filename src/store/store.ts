@@ -1,14 +1,28 @@
-// src/store/index.js
-import { configureStore } from '@reduxjs/toolkit';
-import questionsReducer from './slices/questionsStore';
-import datesReducer from './slices/datesStore';
+import { configureStore } from '@reduxjs/toolkit'
+import questionsReducer from './slices/questionsStore'
+import datesReducer from './slices/datesStore'
 
+/**
+ * Глобальный Redux-стор приложения.
+ * Объединяет все слайсы в единое дерево состояния.
+ */
 export const GlobalStore = configureStore({
   reducer: {
+    /** Слайс для управления вопросами */
     questions: questionsReducer,
-    dates: datesReducer
+    /** Слайс для управления датами */
+    dates: datesReducer,
   },
-});
+})
 
-export type RootState = ReturnType<typeof GlobalStore.getState>;
-export type AppDispatch = typeof GlobalStore.dispatch;
+/**
+ * Тип корневого состояния стора.
+ * Используется для типизации useSelector.
+ */
+export type RootState = ReturnType<typeof GlobalStore.getState>
+
+/**
+ * Тип диспатча.
+ * Используется для типизации useDispatch.
+ */
+export type AppDispatch = typeof GlobalStore.dispatch

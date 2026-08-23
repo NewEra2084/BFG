@@ -12,6 +12,10 @@ import ListItem from "./components/ListItem"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useDrop } from "react-dnd"
 
+/**
+ * Компонент списка вопросов.
+ * Отображает список вопросов с поддержкой загрузки, ошибок, перетаскивания и кликов вне списка.
+ */
 export const List: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { questions, status, error } = useSelector(
@@ -20,10 +24,12 @@ export const List: FC = () => {
   const { chosenDate } = useSelector((state: RootState) => state.dates)
   const listRef = useRef<HTMLDivElement>(null)
 
+  // Загрузка вопросов при изменении выбранной даты
   useEffect(() => {
     dispatch(fetchQuestions(chosenDate))
   }, [dispatch, chosenDate])
 
+  // Закрытие вопроса и очистка swap-массива при клике вне списка
   useEffect(() => {
     const handleMouseClick = (e: MouseEvent) => {
       if (
@@ -41,6 +47,11 @@ export const List: FC = () => {
     }
   }, [dispatch])
 
+  /**
+   * Перемещает вопрос в списке.
+   * @param dragId - ID перетаскиваемого вопроса.
+   * @param hoverId - ID вопроса, над которым произошёл сброс.
+   */
   function moveQuestion(dragId: number, hoverId: number) {
     const dragIndex = questions.findIndex((q) => q.question_id === dragId)
     const hoverIndex = questions.findIndex((q) => q.question_id === hoverId)
@@ -55,6 +66,7 @@ export const List: FC = () => {
     dispatch(setQuestions(newQuestions))
   }
 
+  // Хук для приёма перетаскиваемых элементов
   const [, drop] = useDrop(() => ({
     accept: "QUESTION",
     drop: (item: { id: number }, monitor) => {

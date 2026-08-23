@@ -8,6 +8,16 @@ type Props = {
   children?: ReactNode
 }
 
+/**
+ * Компонент информационного блока.
+ * Отображает иконку, заголовок, значение и дополнительный контент.
+ *
+ * @param icon - Иконка блока.
+ * @param addiction - Дополнительное значение (например, репутация).
+ * @param text - Основной текст.
+ * @param title - Заголовок блока.
+ * @param children - Дополнительный контент.
+ */
 export const InfoBlock: FC<Props> = ({
   icon,
   addiction,
