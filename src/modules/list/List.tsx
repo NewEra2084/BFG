@@ -83,7 +83,7 @@ export const List: FC = () => {
   return (
     <div
       ref={listRef}
-      className="no-select mt-10 flex flex-1 flex-col overflow-y-scroll rounded-3xl bg-secondary px-5 py-6 shadow-secondary transition-all duration-300 hover:shadow-2xl md:mt-20"
+      className="no-select mt-10 flex flex-1 flex-col scrollbar-hide overflow-y-scroll rounded-3xl bg-secondary px-5 py-6 shadow-secondary transition-all duration-300 hover:shadow-2xl md:mt-20"
     >
       {status === "loading" &&
         [1, 2, 3, 4, 5].map((_, id) => (

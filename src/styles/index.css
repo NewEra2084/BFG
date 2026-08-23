@@ -17,11 +17,13 @@
   }
 }
 
+@plugin "tailwind-scrollbar-hide";
+
 body {
   background-color: #2d2d2d;
   padding: 0 5vw;
 }
-#root{
+#root {
   height: 100vh;
   display: flex;
   flex-direction: column;

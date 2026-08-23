@@ -26,7 +26,7 @@ export const AlertDialogCustom: FC<Props> = ({
 }) => {
   return (
     <AlertDialog>
-      <AlertDialogTrigger render={render} />
+      <AlertDialogTrigger nativeButton={false} render={render} />
       <AlertDialogContent className="bg-main">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

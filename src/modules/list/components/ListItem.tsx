@@ -109,14 +109,14 @@ const ListItem: FC<Props> = ({ question }) => {
           </span>
           <div className="flex flex-col items-center justify-between gap-2 overflow-hidden rounded-lg">
             <ChevronUp
-              className={`${isIn && upVotes[index].state === "up" && "bg-green-800"}`}
+              className={`bg-black/80 ${isIn && upVotes[index].state === "up" && "bg-green-800"}`}
               onClick={(e) => {
                 e.stopPropagation()
                 dispatch(upvote(question_id))
               }}
             />
             <ChevronDown
-              className={`${isIn && upVotes[index].state === "down" && "bg-red"}`}
+              className={`bg-black/40 ${isIn && upVotes[index].state === "down" && "bg-red"}`}
               onClick={(e) => {
                 e.stopPropagation()
                 dispatch(downvote(question_id))
@@ -181,7 +181,7 @@ const ListItem: FC<Props> = ({ question }) => {
 
           <AlertDialogCustom
             render={
-              <div>
+              <div onClick={(e) => e.stopPropagation()}>
                 <h6 className="text-xs text-light/70">Ссылка:</h6>
                 <a className="cursor-pointer border-b text-sm md:text-base">
                   {link}
