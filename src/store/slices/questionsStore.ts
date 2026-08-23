@@ -2,12 +2,18 @@ import type { Question } from "@/components/types/question"
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { mockFirst5Questions } from "../__tests__/api_mock"
 
+type Upvote = {
+  id: number
+  state: "up" | "down"
+}
+
 type QuestionsState = {
   questions: Question[]
   status: "loading" | "succeeded" | "failed"
   error: string | null
   selectedQuestionId: number | null
   swapArray: Question[]
+  upVotes: Upvote[]
 }
 
 type fetchError = {
@@ -23,6 +29,7 @@ const initialState: QuestionsState = {
   error: null,
   selectedQuestionId: null,
   swapArray: [],
+  upVotes: [],
 }
 
 export const fetchQuestions = createAsyncThunk(
@@ -60,6 +67,32 @@ const questionsSlice = createSlice({
     },
     setQuestions: (state, action) => {
       state.questions = action.payload
+    },
+    upvote: (state, action: { payload: number }) => {
+      const id = action.payload
+      const index = state.upVotes.findIndex((item) => item.id === id)
+      const isIn = index !== -1
+      if (isIn && state.upVotes[index].state === "up") {
+        state.upVotes = state.upVotes.filter((item) => item.id !== id)
+      } else {
+        state.upVotes = [
+          ...state.upVotes.filter((item) => item.id !== id),
+          { id: id, state: "up" },
+        ]
+      }
+    },
+    downvote: (state, action: { payload: number }) => {
+      const id = action.payload
+      const index = state.upVotes.findIndex((item) => item.id === id)
+      const isIn = index !== -1
+      if (isIn && state.upVotes[index].state === "down") {
+        state.upVotes = state.upVotes.filter((item) => item.id !== id)
+      } else {
+        state.upVotes = [
+          ...state.upVotes.filter((item) => item.id !== id),
+          { id: id, state: "down" },
+        ]
+      }
     },
     clearSwap: (state) => {
       if (state.swapArray.length === 0) return
@@ -108,7 +141,13 @@ const questionsSlice = createSlice({
   },
 })
 
-export const { openQuestion, swapQuestions, clearSwap, setQuestions } =
-  questionsSlice.actions
+export const {
+  openQuestion,
+  swapQuestions,
+  clearSwap,
+  setQuestions,
+  upvote,
+  downvote,
+} = questionsSlice.actions
 
 export default questionsSlice.reducer

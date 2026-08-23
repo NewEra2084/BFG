@@ -21,8 +21,10 @@ import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
 import {
   clearSwap,
+  downvote,
   openQuestion,
   swapQuestions,
+  upvote,
 } from "@/store/slices/questionsStore"
 import { useDrag } from "react-dnd"
 
@@ -34,7 +36,7 @@ const ItemType = "QUESTION"
 
 const ListItem: FC<Props> = ({ question }) => {
   const dispatch = useDispatch()
-  const { selectedQuestionId, swapArray } = useSelector(
+  const { selectedQuestionId, swapArray, upVotes } = useSelector(
     (state: RootState) => state.questions
   )
 
@@ -65,6 +67,9 @@ const ListItem: FC<Props> = ({ question }) => {
   const handleChoose = (id) => {
     dispatch(swapQuestions(id))
   }
+
+  const index = upVotes.findIndex((item) => item.id === question_id)
+  const isIn = index !== -1
 
   return (
     <div
@@ -98,9 +103,21 @@ const ListItem: FC<Props> = ({ question }) => {
           <span className="mr-5 ml-auto text-lg font-bold text-red">
             {score}
           </span>
-          <div className="flex flex-col items-center justify-between">
-            <ChevronUp />
-            <ChevronDown />
+          <div className="flex gap-2 flex-col items-center justify-between overflow-hidden rounded-lg">
+            <ChevronUp
+              className={`${isIn && upVotes[index].state === "up" && "bg-green-800"}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                dispatch(upvote(question_id))
+              }}
+            />
+            <ChevronDown
+              className={`${isIn && upVotes[index].state === "down" && "bg-red"}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                dispatch(downvote(question_id))
+              }}
+            />
           </div>
         </div>
         <div
@@ -155,7 +172,9 @@ const ListItem: FC<Props> = ({ question }) => {
               <>
                 <AlertDialogCancel>Отмена</AlertDialogCancel>
                 <a href={question.link}>
-                  <AlertDialogAction>Перейти</AlertDialogAction>
+                  <AlertDialogAction className="w-full">
+                    Перейти
+                  </AlertDialogAction>
                 </a>
               </>
             }
