@@ -5,7 +5,7 @@ import {
   setQuestions,
 } from "@/store/slices/questionsStore"
 import type { AppDispatch, RootState } from "@/store/store"
-import { useEffect, useRef, type FC, type ReactHTMLElement } from "react"
+import { useEffect, useRef, type FC } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { ListAlert } from "./components/ListAlert"
 import ListItem from "./components/ListItem"

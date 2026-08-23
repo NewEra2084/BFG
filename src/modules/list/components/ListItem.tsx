@@ -4,11 +4,11 @@ import {
   ArrowDownNarrowWide,
   ArrowUpNarrowWide,
   Calendar,
-  Check,
   CheckCheck,
   ChevronDown,
   ChevronUp,
   MoveUp,
+  Tag,
   UserRound,
 } from "lucide-react"
 import { useEffect, useState, type FC } from "react"
@@ -64,7 +64,7 @@ const ListItem: FC<Props> = ({ question }) => {
 
   const handleOpen = (id) => {
     if (swapArray.includes(id)) return
-    if(selectedQuestionId === question_id){
+    if (selectedQuestionId === question_id) {
       dispatch(openQuestion(null))
       return
     }
@@ -135,13 +135,15 @@ const ListItem: FC<Props> = ({ question }) => {
             <ArrowDownNarrowWide size={24} color="#d3d3d3ca" />
           )}
         </div>
-        <div className="absolute top-4 left-4 mb-2 hidden gap-4 pl-5 md:flex">
-          {tags.map((tag, id) => (
-            <div key={id} className="rounded-3xl bg-red/30 px-2 py-1 text-xs">
-              {tag}
-            </div>
-          ))}
-        </div>
+        {selectedQuestionId !== question_id && (
+          <div className="absolute top-3 left-4 mb-2 hidden gap-4 pl-5 md:flex">
+            {tags.map((tag, id) => (
+              <div key={id} className="rounded-3xl bg-red/30 px-2 py-1 text-xs">
+                {tag}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {question_id === selectedQuestionId && (
@@ -163,6 +165,18 @@ const ListItem: FC<Props> = ({ question }) => {
               title="Ответов"
               text={answer_count.toString()}
             ></InfoBlock>
+            <InfoBlock icon={<Tag size={16} />} title="Тэги" text={null}>
+              <div className="flex gap-1">
+                {tags.map((tag, id) => (
+                  <div
+                    key={id}
+                    className="rounded-lg bg-red/30 px-1 py-1 text-xs"
+                  >
+                    {tag}
+                  </div>
+                ))}
+              </div>
+            </InfoBlock>
           </div>
 
           <AlertDialogCustom
