@@ -65,23 +65,27 @@ const questionsSlice = createSlice({
     swapQuestions: (state, action: { payload: Question }) => {
       if (state.swapArray.includes(action.payload)) {
         state.swapArray = []
-        return 
+        return
       }
 
       state.swapArray = [...state.swapArray, action.payload]
 
       if (state.swapArray.length >= 2) {
-        const first = state.questions.indexOf(state.swapArray[0])
-        const second = state.questions.indexOf(state.swapArray[1])
+        const first = state.questions.findIndex(
+          (item) => item.question_id === state.swapArray[0].question_id
+        )
+        const second = state.questions.findIndex(
+          (item) => item.question_id === state.swapArray[1].question_id
+        )
 
-        console.log(state.swapArray, second);
         const newQuestions = [...state.questions]
+        
         newQuestions[first] = state.questions[second]
         newQuestions[second] = state.questions[first]
-        
+        console.log("после",newQuestions);
+
         state.questions = newQuestions
         state.swapArray = []
-        console.log(state.questions, state.swapArray);
       }
     },
   },

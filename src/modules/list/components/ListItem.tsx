@@ -43,8 +43,8 @@ const ListItem: FC<Props> = ({ question }) => {
   } = question
 
   const handleOpen = (id) => {
-    console.log(swapArray);
-    
+    console.log(swapArray)
+
     if (swapArray.includes(id)) return
     dispatch(openQuestion(id))
   }
@@ -98,7 +98,9 @@ const ListItem: FC<Props> = ({ question }) => {
       </div>
 
       {question_id === selectedQuestionId && (
-        <div className="rounded-b-xl bg-main px-10 pt-2 pb-4">
+        <div
+          className="rounded-b-xl bg-main px-10 pt-2 pb-4"
+        >
           <div className="flex flex-col gap-2 md:flex-row md:gap-5">
             <InfoBlock
               icon={<MoveUp size={16} />}
