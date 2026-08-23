@@ -43,8 +43,6 @@ const ListItem: FC<Props> = ({ question }) => {
   } = question
 
   const handleOpen = (id) => {
-    console.log(swapArray)
-
     if (swapArray.includes(id)) return
     dispatch(openQuestion(id))
   }
@@ -59,13 +57,13 @@ const ListItem: FC<Props> = ({ question }) => {
         if (e.detail == 1) {
           handleOpen(question_id)
         } else if (e.detail == 2) {
-          dispatch(openQuestion(null))
           handleChoose(question)
         }
       }}
-      onDoubleClick={() => handleChoose}
     >
-      <div className="relative rounded-2xl md:flex-1">
+      <div
+        className="relative rounded-2xl md:flex-1"
+      >
         <div
           key={question_id}
           className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} ${swapArray.includes(question) ? "bg-green-300" : "bg-main"} px-4 pt-5 pb-8 md:py-0`}

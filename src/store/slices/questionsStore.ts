@@ -17,8 +17,8 @@ type fetchError = {
 }
 
 const initialState: QuestionsState = {
-  // questions: [],
-  questions: mockFirst5Questions,
+  questions: [],
+  // questions: mockFirst5Questions,
   status: "succeeded",
   error: null,
   selectedQuestionId: null,
@@ -82,8 +82,6 @@ const questionsSlice = createSlice({
         
         newQuestions[first] = state.questions[second]
         newQuestions[second] = state.questions[first]
-        console.log("после",newQuestions);
-
         state.questions = newQuestions
         state.swapArray = []
       }

@@ -14,9 +14,9 @@ export const List: FC = () => {
   const { chosenDate } = useSelector((state: RootState) => state.dates)
   const listRef = useRef<HTMLDivElement>(null)
 
-  // useEffect(() => {
-  //   dispatch(fetchQuestions(chosenDate))
-  // }, [chosenDate])
+  useEffect(() => {    
+    dispatch(fetchQuestions(chosenDate))
+  }, [chosenDate])
 
   useEffect(() => {
     const handleMouseClick = (e: MouseEvent) => {
