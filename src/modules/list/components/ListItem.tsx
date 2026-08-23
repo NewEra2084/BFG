@@ -11,7 +11,7 @@ import {
   Tag,
   UserRound,
 } from "lucide-react"
-import { useEffect, useState, type FC } from "react"
+import { useState, type FC } from "react"
 import { InfoBlock } from "./InfoBlock"
 import { AlertDialogCustom } from "./AlertDialog"
 import {
@@ -21,7 +21,6 @@ import {
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
 import {
-  clearSwap,
   downvote,
   openQuestion,
   swapQuestions,
@@ -62,16 +61,15 @@ const ListItem: FC<Props> = ({ question }) => {
     creation_date,
   } = question
 
-  const handleOpen = (id) => {
-    if (swapArray.includes(id)) return
+  const handleOpen = (id: number) => {
     if (selectedQuestionId === question_id) {
       dispatch(openQuestion(null))
       return
     }
     dispatch(openQuestion(id))
   }
-  const handleChoose = (id) => {
-    dispatch(swapQuestions(id))
+  const handleChoose = (question: Question) => {
+    dispatch(swapQuestions(question))
   }
 
   const index = upVotes.findIndex((item) => item.id === question_id)
@@ -165,7 +163,7 @@ const ListItem: FC<Props> = ({ question }) => {
               title="Ответов"
               text={answer_count.toString()}
             ></InfoBlock>
-            <InfoBlock icon={<Tag size={16} />} title="Тэги" text={null}>
+            <InfoBlock icon={<Tag size={16} />} title="Тэги" text={""}>
               <div className="flex gap-1">
                 {tags.map((tag, id) => (
                   <div

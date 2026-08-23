@@ -20,9 +20,9 @@ export const List: FC = () => {
   const { chosenDate } = useSelector((state: RootState) => state.dates)
   const listRef = useRef<HTMLDivElement>(null)
 
-  // useEffect(() => {
-  //   dispatch(fetchQuestions(chosenDate))
-  // }, [chosenDate])
+  useEffect(() => {
+    dispatch(fetchQuestions(chosenDate))
+  }, [dispatch, chosenDate])
 
   useEffect(() => {
     const handleMouseClick = (e: MouseEvent) => {
@@ -39,7 +39,21 @@ export const List: FC = () => {
     return () => {
       window.removeEventListener("click", handleMouseClick)
     }
-  }, [])
+  }, [dispatch])
+
+  function moveQuestion(dragId: number, hoverId: number) {
+    const dragIndex = questions.findIndex((q) => q.question_id === dragId)
+    const hoverIndex = questions.findIndex((q) => q.question_id === hoverId)
+
+    if (dragIndex === -1 || hoverIndex === -1) return
+
+    const newQuestions = [...questions]
+    const tmp = [...questions]
+    newQuestions[dragIndex] = tmp[hoverIndex]
+    newQuestions[hoverIndex] = tmp[dragIndex]
+
+    dispatch(setQuestions(newQuestions))
+  }
 
   const [, drop] = useDrop(() => ({
     accept: "QUESTION",
@@ -66,24 +80,10 @@ export const List: FC = () => {
     },
   }))
 
-  const moveQuestion = (dragId: number, hoverId: number) => {
-    const dragIndex = questions.findIndex((q) => q.question_id === dragId)
-    const hoverIndex = questions.findIndex((q) => q.question_id === hoverId)
-
-    if (dragIndex === -1 || hoverIndex === -1) return
-
-    const newQuestions = [...questions]
-    const tmp = [...questions]
-    newQuestions[dragIndex] = tmp[hoverIndex]
-    newQuestions[hoverIndex] = tmp[dragIndex]
-
-    dispatch(setQuestions(newQuestions))
-  }
-
   return (
     <div
       ref={listRef}
-      className="no-select mt-10 flex flex-1 flex-col scrollbar-hide overflow-y-scroll rounded-3xl bg-secondary px-5 py-6 shadow-secondary transition-all duration-300 hover:shadow-2xl md:mt-20"
+      className="no-select mt-10 scrollbar-hide flex flex-1 flex-col overflow-y-scroll rounded-3xl bg-secondary px-5 py-6 shadow-secondary transition-all duration-300 hover:shadow-2xl md:mt-20"
     >
       {status === "loading" &&
         [1, 2, 3, 4, 5].map((_, id) => (

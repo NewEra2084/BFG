@@ -49,9 +49,9 @@ export const fetchQuestions = createAsyncThunk(
       return res.items
     } catch (e: unknown) {
       if (e instanceof Error) {
-        throw new Error(e.message)
+        throw new Error(e.message, { cause: e })
       }
-      throw new Error("Неизвестная ошибка")
+      throw new Error("Неизвестная ошибка", { cause: e})
     }
   }
 )
