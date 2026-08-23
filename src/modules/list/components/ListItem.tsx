@@ -101,7 +101,9 @@ const ListItem: FC<Props> = ({ question }) => {
           )}
           <p className="max-w-[70%] text-sm md:pl-7 md:text-base">{title}</p>
           <span className="mr-5 ml-auto text-lg font-bold text-red">
-            {score}
+            {!isIn && score}
+            {isIn && upVotes[index].state === "down" && score-1}
+            {isIn && upVotes[index].state === "up" && score+1}
           </span>
           <div className="flex gap-2 flex-col items-center justify-between overflow-hidden rounded-lg">
             <ChevronUp
