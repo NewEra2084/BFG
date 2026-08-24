@@ -50,28 +50,28 @@
 
 <div align="">
   <figure>
-    <img src="./public/dnd.png" alt="Drag-and-Drop" />
+    <img src="./public/dnd.png" alt="Drag-and-Drop" /> <br>
     <figcaption>Drag-and-Drop — перетаскивание элементов списка</figcaption>
   </figure>
 </div>
 
 <div align="">
   <figure>
-    <img src="./public/check.png" alt="Перестановка двойным кликом" />
+    <img src="./public/check.png" alt="Перестановка двойным кликом" /> <br>
     <figcaption>Перестановка — двойной клик для обмена местами</figcaption>
   </figure>
 </div>
 
 <div align="">
   <figure>
-    <img src="./public/date.png" alt="Смена даты"/>
+    <img src="./public/date.png" alt="Смена даты"/> <br>
     <figcaption>Смена даты — обновление списка по выбранной дате</figcaption>
   </figure>
 </div>
 
 <div align="">
   <figure>
-    <img src="./public/likes.png" alt="Лайки и дизлайки" />
+    <img src="./public/likes.png" alt="Лайки и дизлайки" /> <br>
     <figcaption>Лайки и дизлайки — кэшируются до перезагрузки страницы</figcaption>
   </figure>
 </div>
@@ -125,7 +125,7 @@
 
 ## Структура проекта
 
-```js
+```bash
 @/ - src - корневая директория
 ├── /components     - общие переиспользуемые компоненты
 ├── /lib            - утилиты и вспомогательные функции
