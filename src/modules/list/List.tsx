@@ -9,8 +9,12 @@ import { useEffect, useRef, type FC } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { ListAlert } from "./components/ListAlert"
 import ListItem from "./components/ListItem"
+import { motion } from "motion/react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useDrop } from "react-dnd"
+
+// Компонент, обернутый для анимации
+const MotionListItem = motion(ListItem)
 
 /**
  * Компонент списка вопросов.
@@ -115,7 +119,13 @@ export const List: FC = () => {
             ref={drop as unknown as React.Ref<HTMLDivElement>}
           >
             {questions?.map((question) => (
-              <ListItem key={question.question_id} question={question} />
+              <MotionListItem
+                initial={{ opacity: 0, x: 200 }}
+                animate={{ opacity: 1, x: 0}}
+                transition={{duration: 0.5, ease:"backOut"}}
+                key={question.question_id}
+                question={question}
+              />
             ))}
           </div>
         ) : (
