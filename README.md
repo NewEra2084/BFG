@@ -1,21 +1,144 @@
-# React + TypeScript + Vite + shadcn/ui
+# React-Redux Overflow
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 
-## Adding components
+---
 
-To add components to your app, run the following command:
+## Краткий обзор
 
-```bash
-npx shadcn@latest add button
+<div align="center">
+  <img src="./public/image.png" alt="Preview" width="800" />
+</div>
+
+Репозиторий создан в рамках тестового задания. Разработка заняла **четыре дня**.
+
+**Основная задача:** отображение топ-5 вопросов с Stack Overflow, начиная с выбранной пользователем даты.
+
+**Архитектура:** в качестве основы выбрана **модульная архитектура**, что обеспечивает гибкость и масштабируемость приложения.
+
+---
+
+## Использование
+
+<div align="center">
+  <img src="./public/main.png" alt="Основной интерфейс" />
+</div>
+
+### Взаимодействие с элементами списка
+
+- **Одиночный клик** по элементу раскрывает его, показывая подробную информацию о вопросе: автор, дата создания, количество ответов и ссылка на оригинальный пост.
+- **Двойной клик** выделяет элемент (под ним появляется галочка). При выборе второго элемента они меняются местами в списке.
+- **Drag-and-Drop (DnD):** элемент можно перетащить, и при отпускании он меняется местами с элементом, над которым находится курсор.
+- **Визуальная индикация:** вопросы, отмеченные как "получен ответ", выделяются зелёной рамкой.
+
+### Управление датой и обновление списка
+
+- При выборе даты, отличной от текущей, появляется кнопка **"Поиск"**. После её нажатия выполняется запрос к серверу, и список вопросов обновляется.
+
+### Голосование (лайки/дизлайки)
+
+- Лайки и дизлайки сохраняются до перезагрузки страницы. При смене даты голоса сохраняются.
+
+### Переход по ссылке
+
+- При клике на ссылку на пост открывается модальное окно с подтверждением перехода на внешний сайт.
+
+---
+
+## Фичи
+
+<div align="">
+  <figure>
+    <img src="./public/dnd.png" alt="Drag-and-Drop" />
+    <figcaption>Drag-and-Drop — перетаскивание элементов списка</figcaption>
+  </figure>
+</div>
+
+<div align="">
+  <figure>
+    <img src="./public/check.png" alt="Перестановка двойным кликом" />
+    <figcaption>Перестановка — двойной клик для обмена местами</figcaption>
+  </figure>
+</div>
+
+<div align="">
+  <figure>
+    <img src="./public/date.png" alt="Смена даты"/>
+    <figcaption>Смена даты — обновление списка по выбранной дате</figcaption>
+  </figure>
+</div>
+
+<div align="">
+  <figure>
+    <img src="./public/likes.png" alt="Лайки и дизлайки" />
+    <figcaption>Лайки и дизлайки — кэшируются до перезагрузки страницы</figcaption>
+  </figure>
+</div>
+
+---
+
+## Стэк технологиций
+
+| Категория                                        | Технологии                                                |
+| ------------------------------------------------ | --------------------------------------------------------- |
+| <span style="color:#61DAFB;">**Frontend**</span> | React, TypeScript, Tailwind CSS, Redux, shadcn/ui, Vitest |
+| <span style="color:#f89820;">**Backend** </span> | StackOverflow API                                         |
+
+---
+
+## Установка и запуск
+
+1. **Клонирование репозитория**
+
+   ```bash
+   git clone https://github.com/NewEra2084/BFG.git
+   ```
+
+2. **Установка зависимостей**
+
+   ```bash
+   cd BFG
+   npm install
+   ```
+
+3. **Запуск в режиме разработки**
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Сборка для production**
+
+   ```bash
+   npm run build
+   ```
+
+---
+
+## Структура проекта
+
+```js
+@/ - src - корневая директория
+├── /components     - общие переиспользуемые компоненты
+├── /lib            - утилиты и вспомогательные функции
+├── /modules        - модули для построения UI
+├── /store          - управление состоянием (Redux)
+└── /styles         - конфигурация Tailwind и нормализация стилей
 ```
 
-This will place the ui components in the `src/components` directory.
+---
 
-## Using components
+## Тестирование
 
-To use the components in your app, import them as follows:
+Для тестирования используется библиотека Vitest. Тесты пишутся для каждого модуля локально в его папке. Тесты для хранилища находятся по пути:
 
-```tsx
-import { Button } from "@/components/ui/button"
+```bash
+  @/store/__tests__
+```
+
+### Запуск тестов:
+
+```bash
+  npm run test
 ```
