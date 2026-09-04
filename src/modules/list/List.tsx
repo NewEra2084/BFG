@@ -51,51 +51,6 @@ export const List: FC = () => {
     }
   }, [dispatch])
 
-  /**
-   * Перемещает вопрос в списке.
-   * @param dragId - ID перетаскиваемого вопроса.
-   * @param hoverId - ID вопроса, над которым произошёл сброс.
-   */
-  function moveQuestion(dragId: number, hoverId: number) {
-    const dragIndex = questions.findIndex((q) => q.question_id === dragId)
-    const hoverIndex = questions.findIndex((q) => q.question_id === hoverId)
-
-    if (dragIndex === -1 || hoverIndex === -1) return
-
-    const newQuestions = [...questions]
-    const tmp = [...questions]
-    newQuestions[dragIndex] = tmp[hoverIndex]
-    newQuestions[hoverIndex] = tmp[dragIndex]
-
-    dispatch(setQuestions(newQuestions))
-  }
-
-  // Хук для приёма перетаскиваемых элементов
-  const [, drop] = useDrop(() => ({
-    accept: "QUESTION",
-    drop: (item: { id: number }, monitor) => {
-      const clientOffset = monitor.getClientOffset()
-      if (!clientOffset) return
-
-      const elements = document.elementsFromPoint(
-        clientOffset.x,
-        clientOffset.y
-      )
-      const targetElement = elements.find((el) =>
-        el.classList.contains("list-items")
-      )
-
-      if (!targetElement) return
-
-      const hoverId = targetElement.getAttribute("data-question-id")
-      if (!hoverId) return
-
-      if (Number(item.id) !== Number(hoverId)) {
-        moveQuestion(Number(item.id), Number(hoverId))
-      }
-    },
-  }))
-
   return (
     <div
       ref={listRef}
@@ -116,13 +71,12 @@ export const List: FC = () => {
         (questions.length > 0 ? (
           <div
             className="flex flex-1 flex-col"
-            ref={drop as unknown as React.Ref<HTMLDivElement>}
           >
             {questions?.map((question) => (
               <MotionListItem
-                initial={{ opacity: 0, x: 200 }}
-                animate={{ opacity: 1, x: 0}}
-                transition={{duration: 0.5, ease:"backOut"}}
+                // initial={{ opacity: 0, x: 200 }}
+                // animate={{ opacity: 1, x: 0}}
+                // transition={{duration: 0.5, ease:"backOut"}}
                 key={question.question_id}
                 question={question}
               />
