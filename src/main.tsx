@@ -1,5 +1,5 @@
 // сделали замечание про двойной запрос на сервер?? при инициализации - при разработке стоял Strict Mode - это норма, вроде...
-import { StrictMode } from "react"
+// import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
 import "./styles/globals.css"
