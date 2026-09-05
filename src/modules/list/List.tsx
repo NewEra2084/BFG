@@ -2,7 +2,6 @@ import {
   clearSwap,
   fetchQuestions,
   openQuestion,
-  setQuestions,
 } from "@/store/slices/questionsStore"
 import type { AppDispatch, RootState } from "@/store/store"
 import { useEffect, useRef, type FC } from "react"

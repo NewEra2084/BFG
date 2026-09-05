@@ -1,6 +1,5 @@
 import type { Question } from "@/components/types/question"
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import { mockFirst5Questions } from "../__tests__/api_mock"
 
 /**
  * Тип для голосования: up или down.

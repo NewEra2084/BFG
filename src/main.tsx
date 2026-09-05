@@ -1,3 +1,4 @@
+// сделали замечание про двойной запрос на сервер?? при инициализации - при разработке стоял Strict Mode - это норма, вроде...
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
@@ -9,11 +10,9 @@ import { ThemeProvider } from "@/components/theme-provider.tsx"
 import { GlobalStore } from "./store/store.ts"
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
     <ThemeProvider>
       <Provider store={GlobalStore}>
         <App />
       </Provider>
     </ThemeProvider>
-  </StrictMode>
 )
