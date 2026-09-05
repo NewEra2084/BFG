@@ -13,3 +13,5 @@ export type Question = {
   creation_date: number
   answer_count: number
 }
+
+export type Owner = Question["owner"]

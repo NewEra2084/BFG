@@ -26,6 +26,7 @@
     "react-day-picker": "^10.0.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-touch-backend": "^16.0.1",
     "react-dom": "^19.2.6",
     "react-redux": "^9.3.0",
     "redux": "^5.0.1",

@@ -1,4 +1,4 @@
-import type { Question } from "@/components/types/question"
+import type { Owner, Question } from "@/components/types/question"
 import { format } from "date-fns"
 import {
   ArrowDownNarrowWide,
@@ -11,14 +11,10 @@ import {
   Tag,
   UserRound,
 } from "lucide-react"
-import { forwardRef, useState, type ForwardedRef } from "react"
+import { forwardRef, useRef, useState, type ForwardedRef } from "react"
 import { motion } from "motion/react"
 import { InfoBlock } from "./InfoBlock"
-import { AlertDialogCustom } from "./AlertDialog"
-import {
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog"
+import { AlertSite } from "./AlertDialog"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
 import {
@@ -27,6 +23,7 @@ import {
   setQuestions,
   swapQuestions,
   upvote,
+  type Upvote,
 } from "@/store/slices/questionsStore"
 import { useDrag, useDrop } from "react-dnd"
 
@@ -52,9 +49,9 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
       (state: RootState) => state.questions
     )
     const [isHover, setIsHover] = useState(false)
+    const isDoubleClick = useRef(false)
 
     // Drag and Drop
-
     const [{ isDragging }, drag] = useDrag(() => ({
       type: ItemType.question,
       item: question,
@@ -75,7 +72,6 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
               (i) => i.question_id === question.question_id
             )
             if (!first || !second) return
-            console.log(first, second)
 
             const firstIndex = questions.indexOf(first)
             const secondIndex = questions.indexOf(second)
@@ -94,23 +90,13 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
       [questions]
     )
 
-    const {
-      question_id,
-      title,
-      answer_count,
-      is_answered,
-      link,
-      owner,
-      score,
-      tags,
-      creation_date,
-    } = question
+    const { question_id, title, is_answered, owner, score, tags } = question
 
     /**
      * Открывает или закрывает карточку вопроса.
      * При повторном клике по выбранному вопросу закрывает его.
      */
-    const handleOpen = (id: number) => {
+    const handleOpen = (id: number | null) => {
       if (selectedQuestionId === question_id) {
         dispatch(openQuestion(null))
         return
@@ -125,9 +111,6 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
       dispatch(swapQuestions(question))
     }
 
-    const index = upVotes.findIndex((item) => item.id === question_id)
-    const isIn = index !== -1
-
     return (
       <div
         ref={ref}
@@ -139,14 +122,22 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
         >
           <div
             ref={drag as unknown as React.Ref<HTMLDivElement>}
-            data-question-id={question_id}
             className={`flex h-full ${is_answered && "ring-2 ring-green-800 outline-1"} flex-col rounded-xl`}
-            onClick={(e) => {
-              if (e.detail == 1) {
-                handleOpen(question_id)
-              } else if (e.detail == 2) {
-                handleChoose(question)
-              }
+            onClick={() => {
+              setTimeout(() => {
+                if (!isDoubleClick.current) {
+                  handleOpen(question_id)
+                }
+              }, 180)
+            }}
+            onDoubleClick={() => {
+              isDoubleClick.current = true
+              handleChoose(question)
+              selectedQuestionId && handleOpen(null)
+              setTimeout(() => {
+                isDoubleClick.current = false
+              }, 300)
+              return
             }}
             onMouseOver={() => setIsHover(true)}
             onMouseOut={() => setIsHover(false)}
@@ -161,55 +152,11 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
                     ? title
                     : title.trim().slice(0, 60) + "..."}
                 </p>
-                <span className="mr-5 ml-auto text-lg font-bold text-red">
-                  <motion.span
-                    key={
-                      score +
-                      (isIn
-                        ? upVotes[index]?.state === "up"
-                          ? 1
-                          : upVotes[index]?.state === "down"
-                            ? -1
-                            : 0
-                        : 0)
-                    }
-                    initial={{ scale: 0.8, opacity: 0.5 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    {!isIn && score}
-                    {isIn && upVotes[index]?.state === "down" && score - 1}
-                    {isIn && upVotes[index]?.state === "up" && score + 1}
-                    {isIn && !upVotes[index] && score}
-                  </motion.span>
-                </span>
-                <div className="flex flex-col items-center justify-between gap-2 overflow-hidden rounded-lg">
-                  <motion.div
-                    whileTap={{ rotate: 30 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  >
-                    <ChevronUp
-                      className={`bg-black/80 ${isIn && upVotes[index].state === "up" && "bg-green-800"}`}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        dispatch(upvote(question_id))
-                      }}
-                    />
-                  </motion.div>
 
-                  <motion.div
-                    whileTap={{ rotate: -30 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  >
-                    <ChevronDown
-                      className={`bg-black/40 ${isIn && upVotes[index].state === "down" && "bg-red"}`}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        dispatch(downvote(question_id))
-                      }}
-                    />
-                  </motion.div>
-                </div>
+                <RatingBlock
+                  upVotes={upVotes}
+                  questionData={{ score, question_id }}
+                />
               </div>
               <div
                 className={`absolute right-0 bottom-0 left-0 ${isHover || swapArray.includes(question) || question_id === selectedQuestionId ? "flex" : "hidden"} justify-center ${question_id === selectedQuestionId ? "" : "rounded-b-xl"} bg-red/30`}
@@ -237,39 +184,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
             </div>
 
             {question_id === selectedQuestionId && (
-              <div className="rounded-b-xl bg-main px-10 pt-2 pb-4">
-                <div className="flex flex-col gap-2 md:flex-row md:gap-5">
-                  <InfoBlock
-                    icon={<MoveUp size={16} />}
-                    title="Спросил"
-                    text={owner.display_name}
-                    addiction={owner.reputation}
-                  />
-                  <InfoBlock
-                    icon={<Calendar size={16} />}
-                    title="Дата"
-                    text={format(new Date(creation_date * 1000), "PPP")}
-                  />
-                  <InfoBlock
-                    icon={<UserRound size={16} />}
-                    title="Ответов"
-                    text={answer_count.toString()}
-                  />
-                  <InfoBlock icon={<Tag size={16} />} title="Тэги" text={""}>
-                    <div className="flex gap-1">
-                      {tags.map((tag, id) => (
-                        <div
-                          key={id}
-                          className="rounded-lg bg-red/30 px-1 py-1 text-xs"
-                        >
-                          {tag}
-                        </div>
-                      ))}
-                    </div>
-                  </InfoBlock>
-                </div>
-                <AlertDialog link={question.link}/>
-              </div>
+              <QuestionDetails owner={owner} question={question} />
             )}
           </div>
         </div>
@@ -278,32 +193,111 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
   }
 )
 
-function AlertDialog({ link }: { link: string }) {
+function QuestionDetails({
+  owner,
+  question,
+}: {
+  owner: Owner
+  question: Question
+}) {
   return (
-    <AlertDialogCustom
-      render={
-        <div onClick={(e) => e.stopPropagation()}>
-          <h6 className="text-xs text-light/70">Ссылка:</h6>
-          <a className="cursor-pointer border-b text-sm md:text-base">{link}</a>
-        </div>
-      }
-      buttons={
-        <>
-          <AlertDialogCancel>Отмена</AlertDialogCancel>
-          <a href={link}>
-            <AlertDialogAction className="w-full">Перейти</AlertDialogAction>
-          </a>
-        </>
-      }
-      title="Переход на сайт с вопросом"
-      description={
-        <p>
-          Вы направляетесь на сайт
-          <span className="text-red/90"> StackOverflow.com</span>, сайт не несет
-          ответственности за его действия.
-        </p>
-      }
-    />
+    <div className="rounded-b-xl bg-main px-10 pt-2 pb-4">
+      <div className="flex flex-col gap-2 md:flex-row md:gap-5">
+        <InfoBlock
+          icon={<MoveUp size={16} />}
+          title="Спросил"
+          text={owner.display_name}
+          addiction={owner.reputation}
+        />
+        <InfoBlock
+          icon={<Calendar size={16} />}
+          title="Дата"
+          text={format(new Date(question.creation_date * 1000), "PPP")}
+        />
+        <InfoBlock
+          icon={<UserRound size={16} />}
+          title="Ответов"
+          text={question.answer_count.toString()}
+        />
+        <InfoBlock icon={<Tag size={16} />} title="Тэги" text={""}>
+          <div className="flex gap-1">
+            {question.tags.map((tag, id) => (
+              <div key={id} className="rounded-lg bg-red/30 px-1 py-1 text-xs">
+                {tag}
+              </div>
+            ))}
+          </div>
+        </InfoBlock>
+      </div>
+      <AlertSite link={question.link} />
+    </div>
+  )
+}
+
+function RatingBlock({
+  upVotes,
+  questionData,
+}: {
+  upVotes: Upvote[]
+  questionData: Pick<Question, "question_id" | "score">
+}) {
+  const dispatch = useDispatch()
+  const { question_id, score } = questionData
+  const index = upVotes.findIndex((item) => item.id === question_id)
+  const isIn = index !== -1
+
+  return (
+    <>
+      <span className="mr-5 ml-auto text-lg font-bold text-red">
+        <motion.span
+          key={
+            score +
+            (isIn
+              ? upVotes[index]?.state === "up"
+                ? 1
+                : upVotes[index]?.state === "down"
+                  ? -1
+                  : 0
+              : 0)
+          }
+          initial={{ scale: 0.8, opacity: 0.5 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.15 }}
+        >
+          {!isIn && score}
+          {isIn && upVotes[index]?.state === "down" && score - 1}
+          {isIn && upVotes[index]?.state === "up" && score + 1}
+          {isIn && !upVotes[index] && score}
+        </motion.span>
+      </span>
+      <div className="flex flex-col items-center justify-between gap-2 overflow-hidden rounded-lg">
+        <motion.div
+          whileTap={{ rotate: 30 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <ChevronUp
+            className={`bg-black/80 ${isIn && upVotes[index].state === "up" && "bg-green-800"}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              dispatch(upvote(question_id))
+            }}
+          />
+        </motion.div>
+
+        <motion.div
+          whileTap={{ rotate: -30 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <ChevronDown
+            className={`bg-black/40 ${isIn && upVotes[index].state === "down" && "bg-red"}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              dispatch(downvote(question_id))
+            }}
+          />
+        </motion.div>
+      </div>
+    </>
   )
 }
 

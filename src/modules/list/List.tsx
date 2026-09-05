@@ -11,7 +11,6 @@ import { ListAlert } from "./components/ListAlert"
 import ListItem from "./components/ListItem"
 import { motion } from "motion/react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useDrop } from "react-dnd"
 
 // Компонент, обернутый для анимации
 const MotionListItem = motion(ListItem)
@@ -31,7 +30,7 @@ export const List: FC = () => {
   // Загрузка вопросов при изменении выбранной даты
   useEffect(() => {
     dispatch(fetchQuestions(chosenDate))
-  }, [dispatch, chosenDate])
+  }, [chosenDate])
 
   // Закрытие вопроса и очистка swap-массива при клике вне списка
   useEffect(() => {
@@ -69,14 +68,12 @@ export const List: FC = () => {
       )}
       {status === "succeeded" &&
         (questions.length > 0 ? (
-          <div
-            className="flex flex-1 flex-col"
-          >
+          <div className="flex flex-1 flex-col">
             {questions?.map((question) => (
               <MotionListItem
-                // initial={{ opacity: 0, x: 200 }}
-                // animate={{ opacity: 1, x: 0}}
-                // transition={{duration: 0.5, ease:"backOut"}}
+                initial={false}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, ease: "backOut" }}
                 key={question.question_id}
                 question={question}
               />

@@ -33,7 +33,7 @@ type fetchError = {
 }
 
 const initialState: QuestionsState = {
-  questions: mockFirst5Questions,
+  questions: [],
   status: "succeeded",
   error: null,
   selectedQuestionId: null,
@@ -51,7 +51,7 @@ export const fetchQuestions = createAsyncThunk(
   async (date: string) => {
     const perPage = 5
     const fromDate = Date.parse(date) / 1000 || 1767225600
-    const link = `https://api.stackexchange.com/2.3/questions?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&site=stackoverflow`
+    const link = `https://api.stackexchange.com/2.3/questions?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&site=stackoverflow&title=react;redux`
     try {
       const req = await fetch(link)
       if (!req.ok) {
