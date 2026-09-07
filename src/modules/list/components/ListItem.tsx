@@ -11,6 +11,7 @@ import {
   Tag,
   UserRound,
 } from "lucide-react"
+import ReactMarkdown from "react-markdown"
 import { forwardRef, useRef, useState, type ForwardedRef } from "react"
 import { motion } from "motion/react"
 import { InfoBlock } from "./InfoBlock"
@@ -114,7 +115,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
     return (
       <div
         ref={ref}
-        className={`${question_id === selectedQuestionId ? "md:flex-2" : "md:flex-1"} m-2`}
+        className={`${question_id === selectedQuestionId ? "md:flex-2" : "md:flex-1"} m-2 max-h-[25%]`}
       >
         <div
           ref={drop as unknown as React.Ref<HTMLDivElement>}
@@ -148,9 +149,11 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
                 className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} ${isDragging ? "bg-green-800" : "bg-main"} px-4 pt-5 pb-8 md:py-0`}
               >
                 <p className="max-w-[60%] text-justify text-sm md:pl-7 md:text-start md:text-base">
-                  {question_id === selectedQuestionId
-                    ? title
-                    : title.trim().slice(0, 60) + "..."}
+                  <ReactMarkdown>
+                    {question_id === selectedQuestionId
+                      ? title
+                      : title.trim().slice(0, 60) + "..."}
+                  </ReactMarkdown>
                 </p>
 
                 <RatingBlock
@@ -164,7 +167,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
                 {swapArray.includes(question) ? (
                   <CheckCheck size={24} color="#d3d3d3ca" />
                 ) : question_id === selectedQuestionId ? (
-                  <ArrowUpNarrowWide size={24} color="#d3d3d3ca" />
+                  <ArrowUpNarrowWide size={16} color="#d3d3d3ca" />
                 ) : (
                   <ArrowDownNarrowWide size={24} color="#d3d3d3ca" />
                 )}
