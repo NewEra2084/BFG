@@ -15,6 +15,7 @@ describe('questionsSlice', () => {
     questions: mockFirst5Questions,
     status: 'succeeded',
     error: null,
+    qType: "rr",
     selectedQuestionId: null,
     swapArray: [],
     upVotes: [],
@@ -22,7 +23,7 @@ describe('questionsSlice', () => {
 
   it('должен вернуть начальное состояние', () => {
     expect(questionsReducer(undefined, { type: 'unknown' })).toEqual(
-      initialState
+      {...initialState, questions: []}
     )
   })
 
