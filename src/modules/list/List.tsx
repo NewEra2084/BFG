@@ -28,7 +28,8 @@ export const List: FC = () => {
 
   // Загрузка вопросов при изменении выбранной даты
   useEffect(() => {
-    dispatch(fetchQuestions(chosenDate))
+    const promise = dispatch(fetchQuestions(chosenDate))
+    return () => promise.abort()
   }, [chosenDate])
 
   // Закрытие вопроса и очистка swap-массива при клике вне списка

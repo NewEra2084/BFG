@@ -148,13 +148,13 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
                 key={question_id}
                 className={`flex h-full items-center ${question_id === selectedQuestionId ? "rounded-t-xl" : "rounded-xl"} ${isDragging ? "bg-green-800" : "bg-main"} px-4 pt-5 pb-8 md:py-0`}
               >
-                <p className="max-w-[60%] text-justify text-sm md:pl-7 md:text-start md:text-base">
+                <code className="max-w-[60%] text-justify text-sm md:pl-7 md:text-start md:text-base">
                   <ReactMarkdown>
                     {question_id === selectedQuestionId
                       ? title
                       : title.trim().slice(0, 60) + "..."}
                   </ReactMarkdown>
-                </p>
+                </code>
 
                 <RatingBlock
                   upVotes={upVotes}

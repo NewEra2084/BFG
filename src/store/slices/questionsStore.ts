@@ -47,12 +47,12 @@ const initialState: QuestionsState = {
  */
 export const fetchQuestions = createAsyncThunk(
   "questions/fetchQuestions",
-  async (date: string) => {
+  async (date: string, { signal }) => {
     const perPage = 5
     const fromDate = Date.parse(date) / 1000 || 1767225600
-    const link = `https://api.stackexchange.com/2.3/search?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&intitle=react;redux&site=stackoverflow`
+    const link = `https://api.stackexchange.com/2.3/search?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&intitle=react-redux&site=stackoverflow`
     try {
-      const req = await fetch(link)
+      const req = await fetch(link, { signal })
       if (!req.ok) {
         const errorText: fetchError = await req.json()
         throw new Error(
@@ -173,6 +173,10 @@ const questionsSlice = createSlice({
         state.questions = action.payload
       })
       .addCase(fetchQuestions.rejected, (state, action) => {
+        if (action.error.name === "AbortError") {
+          state.error = null
+          return
+        }
         state.status = "failed"
         state.error = action.error.message || "Ошибка загрузки"
       })
