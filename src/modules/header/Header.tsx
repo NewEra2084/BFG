@@ -13,13 +13,22 @@ import { Button } from "@/components/ui/button"
  */
 export const Header: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { qType } = useSelector(
-    (state: RootState) => state.questions
-  )
+  const { qType } = useSelector((state: RootState) => state.questions)
   return (
-    <motion.header initial={{y:-100}} animate={{y:0}} className="flex flex-col items-center justify-between gap-4 pt-8 md:flex-row">
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="flex flex-col justify-between gap-4 pt-8 md:flex-row"
+    >
       <Logo />
-      <Button className={"ml-auto min-w-40"} onClick={()=>dispatch(changeQType())}>{qType === "all" ? "Все" : "React-Redux"}</Button>
+      <div className="flex items-center justify-center md:ml-auto order-2 md:order-0">
+        <Button
+          className={"w-full md:min-w-40"}
+          onClick={() => dispatch(changeQType())}
+        >
+          {qType === "all" ? "Все" : "React-Redux"}
+        </Button>
+      </div>
       <DateSearch />
     </motion.header>
   )
