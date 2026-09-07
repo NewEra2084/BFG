@@ -115,7 +115,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
     return (
       <div
         ref={ref}
-        className={`${question_id === selectedQuestionId ? "md:flex-2" : "md:flex-1"} m-2 max-h-[25%]`}
+        className={`${question_id === selectedQuestionId ? "md:flex-2" : "md:flex-1"} m-2`}
       >
         <div
           ref={drop as unknown as React.Ref<HTMLDivElement>}
@@ -123,7 +123,7 @@ const ListItem = forwardRef<HTMLDivElement, Props>(
         >
           <div
             ref={drag as unknown as React.Ref<HTMLDivElement>}
-            className={`flex h-full ${is_answered && "ring-2 ring-green-800 outline-1"} flex-col rounded-xl`}
+            className={`flex h-full md:max-h-56 ${is_answered && "ring-2 ring-green-800 outline-1"} flex-col rounded-xl`}
             onClick={() => {
               setTimeout(() => {
                 if (!isDoubleClick.current) {
@@ -223,9 +223,9 @@ function QuestionDetails({
           text={question.answer_count.toString()}
         />
         <InfoBlock icon={<Tag size={16} />} title="Тэги" text={""}>
-          <div className="flex gap-1">
+          <div className="flex gap-1 items-center flex-wrap my-2">
             {question.tags.map((tag, id) => (
-              <div key={id} className="rounded-lg bg-red/30 px-1 py-1 text-xs">
+              <div key={id} className="rounded-lg bg-red/30 px-1 py-1 text-xs h-fit">
                 {tag}
               </div>
             ))}

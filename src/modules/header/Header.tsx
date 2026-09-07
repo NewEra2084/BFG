@@ -21,7 +21,7 @@ export const Header: FC = () => {
       className="flex flex-col justify-between gap-4 pt-8 md:flex-row"
     >
       <Logo />
-      <div className="flex items-center justify-center md:ml-auto order-2 md:order-0">
+      <div className="order-2 flex items-center justify-center md:order-0 md:ml-auto">
         <Button
           className={"w-full md:min-w-40"}
           onClick={() => dispatch(changeQType())}
