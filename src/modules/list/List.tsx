@@ -20,7 +20,7 @@ const MotionListItem = motion(ListItem)
  */
 export const List: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { questions, status, error } = useSelector(
+  const { questions, status, error, qType } = useSelector(
     (state: RootState) => state.questions
   )
   const { chosenDate } = useSelector((state: RootState) => state.dates)
@@ -30,7 +30,7 @@ export const List: FC = () => {
   useEffect(() => {
     const promise = dispatch(fetchQuestions(chosenDate))
     return () => promise.abort()
-  }, [chosenDate])
+  }, [chosenDate, qType])
 
   // Закрытие вопроса и очистка swap-массива при клике вне списка
   useEffect(() => {

@@ -1,5 +1,6 @@
 import type { Question } from "@/components/types/question"
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import type { RootState } from "../store"
 
 /**
  * Тип для голосования: up или down.
@@ -17,6 +18,8 @@ export type QuestionsState = {
   status: "loading" | "succeeded" | "failed"
   /** Текст ошибки при неудачной загрузке */
   error: string | null
+  /** Тип подгружаемых вопросов */
+  qType: "all" | "rr"
   /** ID выбранного вопроса для отображения деталей */
   selectedQuestionId: number | null
   /** Массив вопросов для обмена местами (drag-and-drop) */
@@ -34,6 +37,7 @@ type fetchError = {
 const initialState: QuestionsState = {
   questions: [],
   status: "succeeded",
+  qType: "rr",
   error: null,
   selectedQuestionId: null,
   swapArray: [],
@@ -47,12 +51,17 @@ const initialState: QuestionsState = {
  */
 export const fetchQuestions = createAsyncThunk(
   "questions/fetchQuestions",
-  async (date: string, { signal }) => {
+  async (date: string, { getState, signal }) => {
     const perPage = 5
     const fromDate = Date.parse(date) / 1000 || 1767225600
-    const link = `https://api.stackexchange.com/2.3/search?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&intitle=react-redux&site=stackoverflow`
+    const state = getState() as RootState
+    const { qType } = state.questions
+    const linkRR = `https://api.stackexchange.com/2.3/search?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&intitle=react-redux&site=stackoverflow`
+    const linkAll = `https://api.stackexchange.com/2.3/questions?page=1&pagesize=${perPage}&fromdate=${fromDate}&order=desc&sort=votes&site=stackoverflow`
     try {
-      const req = await fetch(link, { signal })
+      const req = await fetch(qType === "all" ? linkAll : linkRR, {
+        signal,
+      })
       if (!req.ok) {
         const errorText: fetchError = await req.json()
         throw new Error(
@@ -86,6 +95,11 @@ const questionsSlice = createSlice({
     /** Полностью заменяет список вопросов (используется при перетасовке) */
     setQuestions: (state, action) => {
       state.questions = action.payload
+    },
+
+    /** Полностью заменяет список вопросов (используется при перетасовке) */
+    changeQType: (state) => {
+      state.qType = state.qType === "all" ? "rr" : "all"
     },
 
     /**
@@ -190,6 +204,7 @@ export const {
   setQuestions,
   upvote,
   downvote,
+  changeQType
 } = questionsSlice.actions
 
 export default questionsSlice.reducer
